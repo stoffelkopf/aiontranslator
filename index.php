@@ -1,4 +1,9 @@
 <?PHP
+$mysql_serv = "localhost";
+$mysql_user = "root";
+$mysql_pass = "";
+$mysql_db 	= "aion";
+
 class translation {
 	var $char_elyos = array (
 		0 => array ( 'j', 'k', 'h', 'i', 'n', 'o', 'l', 'm', 'r', 's', 'p', 'q', 'v', 'w', 't', 'u', 'z', 'G', 'b', 'c', 'J', 'a', 'f', 'g', 'd', 'e' ),
@@ -54,6 +59,11 @@ class translation {
 		}
 		return $translated_message;  
 	}  
+	
+	function format_number($number)
+	{
+		return number_format($number, 0, '', '.');
+	}
 }
 ?>  
 
@@ -99,7 +109,7 @@ class translation {
 		</style>
     </head>
 <?PHP
-	$mysql=mysqli_connect("localhost","root","","aion") or die("Mysql Connection Failed");
+	$mysql=mysqli_connect($mysql_serv, $mysql_user, $mysql_pass, $mysql_db) or die("Mysql Connection Failed");
 	$translation = new translation();
 	$sql_query = $mysql->query("SELECT Translations FROM Aion");
 	$count_translations = $sql_query->fetch_object()->Translations;
@@ -262,7 +272,7 @@ class translation {
         <td align=\"center\">
           <br>
           <Font style=\"font-size:8pt; font-family:Verdana; font-weight:bold;text-align:center;\">
-            &Uuml;bersetzungen: $count_translations
+            &Uuml;bersetzungen: ".$translation->format_number($count_translations)."
             <br>
           </Font>
           <br>
