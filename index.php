@@ -1,8 +1,8 @@
 <?PHP
-$mysql_serv = "localhost";
-$mysql_user = "root";
-$mysql_pass = "";
-$mysql_db 	= "aion";
+$mysql_serv	= "localhost";
+$mysql_user	= "root";
+$mysql_pass	= "";
+$mysql_db	= "aion";
 
 class translation {
 	var $char_elyos = array (
@@ -14,9 +14,9 @@ class translation {
   
 	var $index_elyos = array (
 		0 => array ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2, 3, 2, 2, 2, 2, 2),
-        1 => array ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2),
-        2 => array ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2, 2, 2),
-        3 => array ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 2, 2, 2, 2)
+		1 => array ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2),
+		2 => array ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 2, 2, 2),
+		3 => array ( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 2, 2, 2, 2)
     );
   
 	var $char_asmo = array (
