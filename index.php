@@ -4,6 +4,17 @@ $mysql_user	= "root";
 $mysql_pass	= "";
 $mysql_db	= "aion";
 
+function filter_str_get(string $string): string
+{
+    $str = preg_replace('/\x00|<[^>]*>?/', '', $string);
+    return str_replace(["'", '"'], ['&#39;', '&#34;'], $str);
+}
+
+function filter_str(string $string): string
+{  
+    return str_replace(["'", '"', '<', '>', '^', '=', '`', '\\'], ['&#39;', '&#34;', '&#60;', '&#62;', '&#770;', '&#61;', '&#96;', '&#92;'], $string);
+}
+
 class translation {
 	var $char_elyos = array (
 		0 => array ( 'j', 'k', 'h', 'i', 'n', 'o', 'l', 'm', 'r', 's', 'p', 'q', 'v', 'w', 't', 'u', 'z', 'G', 'b', 'c', 'J', 'a', 'f', 'g', 'd', 'e' ),
@@ -32,7 +43,7 @@ class translation {
 	);
   
 	function translate($message,$race) {
-		$message = @strtolower($message);
+		$message = strtolower($message);
 		$message = preg_replace("/ö/", "oe", $message);
 		$message = preg_replace("/ä/", "ae", $message);
 		$message = preg_replace("/ü/", "ue", $message);
@@ -77,16 +88,16 @@ class translation {
 		<title>Aion Translator</title>
 		<style type="text/css">
 			.main {
-				font-size:10pt; color:#FFFFFF; font-family:Verdana;
+				font-size:10.5pt; color:#FFFFFF; font-family:Verdana;
 			}
 			.hover {
 				position:absolute;visibility:hidden;
 			}
 			td {
-				font-size:10pt; font-family:Verdana;
+				font-size:10.5pt; font-family:Verdana;padding:10px;
 			}
 			th {
-				font-size:10pt; font-family:Verdana; font-weight:bold;text-align:center;color:#383838;
+				font-size:10.5pt; font-family:Verdana; font-weight:bold;text-align:center;color:#383838;
 			}
 			form input {
 				font-family:Verdana; color:#FFFFFF;background-color:#000000; border-color:#FFCC00; border-style:groove;
@@ -96,6 +107,9 @@ class translation {
 			}
 			textarea {
 				font-family:Verdana,Helvetica; color:#FFFFFF;background-color:#000000;border-color:#FFCC00; border-style:groove;
+			}
+			input {
+			    padding: 5px;
 			}
 			A:link, A:visited  {
 				text-decoration: none; color:#FFCC00; 
@@ -109,15 +123,22 @@ class translation {
 		</style>
     </head>
 <?PHP
+	$p_german = filter_input(INPUT_POST, "german", FILTER_CALLBACK, ['options' => 'filter_str']);	
+	$p_last = filter_input(INPUT_POST, "last_translation",  FILTER_CALLBACK, ['options' => 'filter_str']);
+	$p_race = filter_input(INPUT_POST, "race",  FILTER_CALLBACK, ['options' => 'filter_str']);
+	$p_lrace = filter_input(INPUT_POST, "last_race",  FILTER_CALLBACK, ['options' => 'filter_str']);
+	foreach ($_GET as $key => $value) {
+        $_GET[$key]=filter_input(INPUT_GET, $key, FILTER_CALLBACK, ['options' => 'filter_str_get']);
+    }
 	$mysql=mysqli_connect($mysql_serv, $mysql_user, $mysql_pass, $mysql_db) or die("Mysql Connection Failed");
 	$translation = new translation();
 	$sql_query = $mysql->query("SELECT Translations FROM Aion");
 	$count_translations = $sql_query->fetch_object()->Translations;
-	if (@strlen($_POST["german"]) < 1) {
+	if (strlen($p_german) < 1) {
 		echo "
 	<body bgcolor=\"#101421\" text=\"#FFFFFF\" onLoad=\"document.trans.german.focus();\">";
 	}else {
-		if ( ($_POST["german"] != $_POST["last_translation"]) || (($_POST["german"] == $_POST["last_translation"]) && ($_POST["race"] != $_POST["last_race"]))) {
+		if ( ($p_german != $p_last) || (($p_german == $p_last) && ($p_race != $p_lrace))) {
 			$count_translations = $count_translations + 1;
 			$sql_query = $mysql->query("UPDATE Aion SET Translations = $count_translations");
 		}
@@ -171,15 +192,15 @@ class translation {
 				  </font>
 				</td>
 				<td colspan=\"2\">";
-	if (@$_POST["race"] == "asmodier") {
-		$bafflegab = $translation->translate(@$_POST["german"],"asmo");
+	if ($p_race == "asmodier") {
+		$bafflegab = $translation->translate($p_german,"asmo");
 		echo "
                   <input type=\"radio\" name=\"race\" value=\"elyos\">&nbsp;Ich bin Elyos (oder &Uuml;bersetzung Elyos).
                   <br>
                   <input type=\"radio\" name=\"race\" value=\"asmodier\" checked>&nbsp;Ich bin Asmodier (oder &Uuml;bersetzung Asmodier).
                   <br>";
 	} else {
-		$bafflegab = $translation->translate(@$_POST["german"],"elyos");
+		$bafflegab = $translation->translate($p_german,"elyos");
 		echo "            
                   <input type=\"radio\" name=\"race\" value=\"elyos\" checked>&nbsp;Ich bin Elyos (oder &Uuml;bersetzung Elyos).
                   <br>
@@ -197,7 +218,7 @@ class translation {
                   </font>
                 </td>
                 <td colspan=\"2\">
-                  <textarea name=\"german\" cols=\"40\" rows=\"4\">".@$_POST["german"]."</textarea>
+                  <textarea name=\"german\" cols=\"40\" rows=\"4\">".$p_german."</textarea>
                   <br>
                 </td>
               </tr>
@@ -263,15 +284,15 @@ class translation {
                 </td>
               </tr>
             </table>
-            <input type=\"hidden\" name=\"last_translation\" value=\"".@$_POST["german"]."\">
-            <input type=\"hidden\" name=\"last_race\" value=\"".@$_POST["race"]."\">
+            <input type=\"hidden\" name=\"last_translation\" value=\"".$p_german."\">
+            <input type=\"hidden\" name=\"last_race\" value=\"".$p_race."\">
           </form>
         </td>
       </tr>
       <tr>
         <td align=\"center\">
           <br>
-          <Font style=\"font-size:8pt; font-family:Verdana; font-weight:bold;text-align:center;\">
+          <Font style=\"font-size:8.5pt; font-family:Verdana; font-weight:bold;text-align:center;\">
             &Uuml;bersetzungen: ".$translation->format_number($count_translations)."
             <br>
           </Font>
